@@ -147,13 +147,29 @@ class BigInt
     {
 
     }
-    BigInt operator ++ (const BigInt& a)
+    BigInt& operator ++ ()
     {
-
+      BigInt one = new BigInt("1");
+      this = this + one;
+      return *this;
     }
-    BigInt operator -- (const BigInt& a)
+    BigInt operator++(BigInt)
     {
-
+      BigInt temp(*this);
+      operator++();
+      return temp;
+    }
+    BigInt& operator -- ()
+    {
+      BigInt one = new BigInt("1");
+      this = this - one;
+      return *this;
+    }
+    BigInt operator--(BigInt)
+    {
+      BigInt temp(*this);
+      operator--();
+      return temp;
     }
     bool operator < (const BigInt& a)
     {
