@@ -302,7 +302,7 @@ class BigInt
         return true;
       if(Size() < a.Size())
         return false;
-      if(size_t i = Size() - 1; i >= 0; i--)
+      for(size_t i = Size() - 1; i >= 0; i--)
       {
         if(At(i) > a.At(i))
           return true;
