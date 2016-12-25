@@ -22,11 +22,16 @@
 class BigInt
 {
   public:
-    BigInt() : bint("") {}  // default constructor
-    BigInt(string s)        // constructor w/ data
+    BigInt() : bint(""), isnegative(false) {}  // default constructor
+    BigInt(std::string s)        // constructor w/ data
     {
       if(s.length() > 0)
       {
+        if(s.at(0) == '-')
+        {
+          isnegative = true;
+          s.erase(0);
+        }
         for(int i = 0; i < s.length() -1; i++)
         {
           if(!isdigit(s[i]))
@@ -37,14 +42,31 @@ class BigInt
         }
         bint = s;
       }
-      else bint = "";
+      else
+      {
+        bint = "";
+        isnegative = false;
+      }
     }
-    BigInt(const BigInt& b) : bint(b.bint) {} // copy constructor
+    BigInt(long l)  // constructor w/ data
+    {
+      bint = std::to_string(l);
+      isnegative = (b < 0);
+    }
+    BigInt(const BigInt& b) : bint(b.bint), isnegative(b.isnegative)
+    {} // copy constructor
     ~BigInt() {}  // destructor
     BigInt& operator = (const BigInt& b) // assignment operator
     {
       if (this != &b)
         bint = b.bint;
+        isnegative = b.isnegative;
+      return *this;
+    }
+    BigInt& operator = (const long& b) // assignment operator
+    {
+      bint = std::to_string(b);
+      isnegative = (b < 0);
       return *this;
     }
     BigInt Max (const BigInt& a, const BigInt& b)
@@ -53,11 +75,25 @@ class BigInt
         return a;
       else return b;
     }
+    BigInt Max (const BigInt& a, const long& b)
+    {
+      BigInt b_bigint = new BigInt(b);
+      if (a > b_bigint)
+        return a;
+      else return b_bigint;
+    }
     BigInt Min (const BigInt& a, const BigInt& b)
     {
       if (a < b)
         return a;
       else return b;
+    }
+    BigInt Min (const BigInt& a, const long& b)
+    {
+      BigInt b_bigint = new BigInt(b);
+      if (a < b_bigint)
+        return a;
+      else return b_bigint;
     }
     BigInt Size(const BigInt &a)
     {
@@ -68,8 +104,8 @@ class BigInt
       // get length of longest int for use in iterator
       size_t size = Size(Max(a,b));
       // get mutable (non-const) versions of BigInt data
-      string biginta = a.bint;
-      string bigintb = b.bint;
+      std::string biginta = a.bint;
+      std::string bigintb = b.bint;
       // reverse strings to put "ones place" in position 0
       Reverse(biginta);
       Reverse(bigintb);
@@ -80,7 +116,7 @@ class BigInt
       while(bigintb.length() < size)
         bigintb += "0";
       // initialize answer string
-      string answer = "";
+      std::string answer = "";
       // initialize temporary sum and carry ints to 0
       int carry = 0, sum_mod = 0;
       for(size_t i = 0; i < size; i++)
@@ -109,13 +145,19 @@ class BigInt
       BigInt sum = new BigInt(answer);
       return sum;
     }
+    BigInt operator + (const BigInt& a, const long& b)
+    {
+      BigInt b_bigint = new BigInt(b);
+      BigInt sum = a + b_bigint;
+      return sum;
+    }
     BigInt operator - (const BigInt& a, const BigInt& b)
     {
       // get length of longest int for use in iterator
       size_t size = Size(Max(a,b));
       // get mutable (non-const) versions of BigInt data
-      string biginta = a.bint;
-      string bigintb = b.bint;
+      std::string biginta = a.bint;
+      std::string bigintb = b.bint;
       // reverse strings to put "ones place" in position 0
       Reverse(biginta);
       Reverse(bigintb);
@@ -126,7 +168,7 @@ class BigInt
       while(bigintb.length() < size)
         bigintb += "0";
       // initialize answer string
-      string answer = "";
+      std::string answer = "";
       // initialize temporary sum and carry ints to 0
       int borrow = 0, diff = 0, a, b;
       for(size_t i = 0; i < size; i++)
@@ -159,6 +201,12 @@ class BigInt
       Reverse(answer);
       // create a BigInt instance to hold the answer string and return it
       BigInt difference = new BigInt(answer);
+      return difference;
+    }
+    BigInt operator - (const BigInt& a, const long& b)
+    {
+      BigInt b_bigint = new BigInt(b);
+      BigInt difference = a - b_bigint;
       return difference;
     }
     BigInt operator * (const BigInt& a, const BigInt& b)
@@ -195,12 +243,19 @@ class BigInt
         // increase offset by one (annex a zero)
         offset++;
       }
+      product.isnegative = (a.isnegative ^ b.isnegative);
+      return product;
+    }
+    BigInt operator * (const BigInt& a, const long& b)
+    {
+      BigInt b_bigint = new BigInt(b);
+      BigInt product = a * b_bigint;
       return product;
     }
     BigInt operator / (const BigInt& a, const BigInt& b)
     {
-      string q;
-        BigInt quotient = new BigInt("0");
+      std::string q;
+      BigInt quotient = new BigInt("0");
       if(a < b)
       { /* do nothing, just return "0" */ }
       else
@@ -212,6 +267,13 @@ class BigInt
         // while loop always goes one too far
         quotient--;
       }
+      quotient.isnegative = (a.isnegative ^ b.isnegative);
+      return quotient;
+    }
+    BigInt operator / (const BigInt& a, const long& b)
+    {
+      BigInt b_bigint = new BigInt(b);
+      BigInt quotient = a / b_bigint;
       return quotient;
     }
     BigInt operator % (const BigInt& a, const BigInt& b)
@@ -220,16 +282,50 @@ class BigInt
       mod = a - ((a / b) * b);
       return mod;
     }
+    BigInt operator % (const BigInt& a, const long& b)
+    {
+      BigInt b_bigint = new BigInt(b);
+      BigInt mod = new BigInt();
+      mod = a % b;
+      return mod;
+    }
     BigInt operator ^ (const BigInt& a, const BigInt& b)
+    {
+      BigInt value = new BigInt("1");
+      BigInt count = new BigInt("0");
+      while(count < b)
+      {
+        value *= a;
+        count++;
+      }
+      if(IsEven(b))
+      {
+        value.isnegative = false;
+      }
+      else value.isnegative = a.isnegative;
+      return value;
+    }
+    BigInt operator ^ (const BigInt& a, const long& b)
     {
       BigInt value = new BigInt("1");
       for(size_t s = 0; s < b; s++)
       {
         value *= a;
       }
+      if(IsEven(b))
+      {
+        value.isnegative = false;
+      }
+      else value.isnegative = a.isnegative;
       return value;
     }
     BigInt& operator += (const BigInt& a, const BigInt& b)
+    {
+      BigInt sum = new BigInt();
+      sum = a + b;
+      return *sum;
+    }
+    BigInt& operator += (const BigInt& a, const long& b)
     {
       BigInt sum = new BigInt();
       sum = a + b;
@@ -241,7 +337,19 @@ class BigInt
       difference = a - b;
       return *difference;
     }
+    BigInt& operator -= (const BigInt& a, const long& b)
+    {
+      BigInt difference = new BigInt();
+      difference = a - b;
+      return *difference;
+    }
     BigInt& operator *= (const BigInt& a, const BigInt& b)
+    {
+      BigInt product = new BigInt();
+      product = a * b;
+      return *product;
+    }
+    BigInt& operator *= (const BigInt& a, const long& b)
     {
       BigInt product = new BigInt();
       product = a * b;
@@ -253,7 +361,19 @@ class BigInt
       quotient = a / b;
       return *quotient;
     }
+    BigInt& operator /= (const BigInt& a, const long& b)
+    {
+      BigInt quotient = new BigInt();
+      quotient = a / b;
+      return *quotient;
+    }
     BigInt& operator %= (const BigInt& a, const BigInt& b)
+    {
+      BigInt mod = new BigInt();
+      mod = a % b;
+      return *mod;
+    }
+    BigInt& operator %= (const BigInt& a, const long& b)
     {
       BigInt mod = new BigInt();
       mod = a % b;
@@ -296,6 +416,20 @@ class BigInt
       }
       return false;
     }
+    bool operator < (const long& a)
+    {
+      std::string s = to_string(a);
+      if(Size() < s.length())
+        return true;
+      if(Size() > s.length())
+        return false;
+      for(size_t i = Size() - 1; i >= 0; i--)
+      {
+        if(At(i) < atoi(s.at(i)))
+          return true;
+      }
+      return false;
+    }
     bool operator > (const BigInt& a)
     {
       if(Size() > a.Size())
@@ -309,11 +443,33 @@ class BigInt
       }
       return false;
     }
+    bool operator > (const long& a)
+    {
+      std::string s = to_string(a);
+      if(Size() > s.length())
+        return true;
+      if(Size() < s.length())
+        return false;
+      for(size_t i = Size() - 1; i >= 0; i--)
+      {
+        if(At(i) > atoi(s.at(i)))
+          return true;
+      }
+      return false;
+    }
     bool operator <= (const BigInt& a)
     {
       return (this < a) || (this == a);
     }
+    bool operator <= (const long& a)
+    {
+      return (this < a) || (this == a);
+    }
     bool operator >= (const BigInt& a)
+    {
+      return (this > a) || (this == a);
+    }
+    bool operator >= (const long& a)
     {
       return (this > a) || (this == a);
     }
@@ -323,9 +479,17 @@ class BigInt
         return a.bint == b.bint;
       return false;
     }
+    bool operator == (const BigInt& a, const long& b)
+    {
+      std::string s = to_string(b);
+      if(a.Size() == s.length())
+        return a.bint == s;
+      return false;
+    }
   private:
-    string bint;
-    void Reverse(string &s)
+    std::string bint;
+    bool isnegative;
+    void Reverse(std::string &s)
     {
       if(s.length() < 2)
         return;
@@ -338,7 +502,7 @@ class BigInt
         return i + 48;
       else return '\0';
     }
-    void CleanUpString(string &s) // removes zeroes from the end of the string
+    void CleanUpString(std::string &s) // removes zeroes from the end of the string
     {
       while(s.at(s.length()-1) == '0')
         s.erase(s.length()-1);
@@ -359,6 +523,10 @@ class BigInt
     void AddDigit(char c)
     {
       bint += c;
+    }
+    bool IsEven()
+    {
+      return (At(bint.length() - 1) % 2 == 0);
     }
 }
 
