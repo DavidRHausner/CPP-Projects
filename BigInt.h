@@ -1,7 +1,7 @@
 /*
   @file     BigInt.h
   @authors  David Hausner
-  @date     2016-12-22
+  @date     2016-12-25
   @version  1.0
   Prototypes of functions for BigInt class
 
@@ -84,7 +84,7 @@ class BigInt
       for(size_t i = 0; i < size; i++)
       {
         // add each place of the string values and previous carry int
-        sum_mod = atoi(biginta[i]) + atoi(bigintb[i]) + carry;
+        sum_mod = biginta.At(i) + bigintb.At(i) + carry;
         // new carry bit is the "tens place" of the temporary sum
         carry = sum_mod / 10;
         // the temporary sum only needs to be one digit, so make it itself % 10
@@ -127,23 +127,23 @@ class BigInt
     {
 
     }
-    BigInt operator += (const BigInt& a, const BigInt& b)
+    BigInt& operator += (const BigInt& a, const BigInt& b)
     {
 
     }
-    BigInt operator -= (const BigInt& a, const BigInt& b)
+    BigInt& operator -= (const BigInt& a, const BigInt& b)
     {
 
     }
-    BigInt operator *= (const BigInt& a, const BigInt& b)
+    BigInt& operator *= (const BigInt& a, const BigInt& b)
     {
 
     }
-    BigInt operator /= (const BigInt& a, const BigInt& b)
+    BigInt& operator /= (const BigInt& a, const BigInt& b)
     {
 
     }
-    BigInt operator %= (const BigInt& a, const BigInt& b)
+    BigInt& operator %= (const BigInt& a, const BigInt& b)
     {
 
     }
@@ -159,13 +159,13 @@ class BigInt
       operator++();
       return temp;
     }
-    BigInt& operator -- ()
+    BigInt operator -- (const BigInt& a)
     {
       BigInt one = new BigInt("1");
       this = this - one;
       return *this;
     }
-    BigInt operator--(BigInt)
+    BigInt operator++(BigInt)
     {
       BigInt temp(*this);
       operator--();
@@ -173,23 +173,43 @@ class BigInt
     }
     bool operator < (const BigInt& a)
     {
-
+      if(Size() < a.Size())
+        return true;
+      if(Size() > a.Size())
+        return false;
+      if(size_t i = Size() - 1; i >= 0; i--)
+      {
+        if(At(i) < a.At(i))
+          return true;
+        else return false;
+      }
     }
     bool operator > (const BigInt& a)
     {
-
+      if(Size() > a.Size())
+        return true;
+      if(Size() < a.Size())
+        return false;
+      if(size_t i = Size() - 1; i >= 0; i--)
+      {
+        if(At(i) > a.At(i))
+          return true;
+        else return false;
+      }
     }
     bool operator <= (const BigInt& a)
     {
-
+      return (this < a) || (this == a);
     }
     bool operator >= (const BigInt& a)
     {
-
+      return (this > a) || (this == a);
     }
     bool operator == (const BigInt& a, const BigInt& b)
     {
-      return a.bint == b.bint;
+      if(a.Size() == b.Size())
+        return a.bint == b.bint;
+      return false;
     }
   private:
     string bint;
@@ -211,8 +231,11 @@ class BigInt
       while(s.at(s.length()-1) == '0')
         s.erase(s.length()-1);
     }
+    int At(size_t s)
+    {
+      if(s < Size())
+        return atoi(bint.at(s));
+    }
 }
-
-
 
 #endif
