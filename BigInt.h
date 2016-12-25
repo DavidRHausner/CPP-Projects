@@ -84,7 +84,7 @@ class BigInt
       for(size_t i = 0; i < size; i++)
       {
         // add each place of the string values and previous carry int
-        sum_mod = biginta.At(i) + bigintb.At(i) + carry;
+        sum_mod = atoi(biginta.at(i)) + atoi(bigintb.at(i)) + carry;
         // new carry bit is the "tens place" of the temporary sum
         carry = sum_mod / 10;
         // the temporary sum only needs to be one digit, so make it itself % 10
