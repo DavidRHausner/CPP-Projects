@@ -4,7 +4,7 @@
   @date     2016-12-25
   @version  1.0
   Prototypes of functions for BigInt class
-  
+
   UNTESTED
 
   Copyright 2016, D. R. Hausner
@@ -243,6 +243,7 @@ class BigInt
         // increase offset by one (annex a zero)
         offset++;
       }
+      // handle whether answer is + or - with an XOR
       product.isnegative = (a.isnegative ^ b.isnegative);
       return product;
     }
@@ -267,6 +268,7 @@ class BigInt
         // while loop always goes one too far
         quotient--;
       }
+      // handle whether answer is + or - with an XOR
       quotient.isnegative = (a.isnegative ^ b.isnegative);
       return quotient;
     }
