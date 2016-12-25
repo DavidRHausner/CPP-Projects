@@ -397,7 +397,7 @@ class BigInt
       this = this - one;
       return *this;
     }
-    BigInt operator++(BigInt)
+    BigInt operator--(BigInt)
     {
       BigInt temp(*this);
       operator--();
