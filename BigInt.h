@@ -107,9 +107,57 @@ class BigInt
       BigInt sum = new BigInt(answer);
       return sum;
     }
-    BigInt operator - (const BigInt& a, const BigInt& b)
+        BigInt operator - (const BigInt& a, const BigInt& b)
     {
-
+      // get length of longest int for use in iterator
+      size_t size = Size(Max(a,b));
+      // get mutable (non-const) versions of BigInt data
+      string biginta = a.bint;
+      string bigintb = b.bint;
+      // reverse strings to put "ones place" in position 0
+      Reverse(biginta);
+      Reverse(bigintb);
+      // ensure that both strings are the same length by
+      // concatenating "leading" zeroes on the shorter one
+      while(biginta.length() < size)
+        biginta += "0";
+      while(bigintb.length() < size)
+        bigintb += "0";
+      // initialize answer string
+      string answer = "";
+      // initialize temporary sum and carry ints to 0
+      int borrow = 0, diff = 0, a, b;
+      for(size_t i = 0; i < size; i++)
+      {
+        //
+        a = atoi(biginta.at(i));
+        b = atoi(bigintb.at(i));
+        // compare to see if borrowing will be done
+        if(a >= (b + borrow)) // no borrowing necessary
+        {
+          // subtract b and the previous round's borrow from a
+          diff = a - (b + borrow);
+          // no borrowing this round
+          borrow = 0;
+        }
+        else  // borrowing necessary
+        {
+          // subtract b and the prev. round's borrow from a + 10
+          diff = (a + 10) - (b + borrow);
+          // borrowing this round, set for next round
+          borrow = 1;
+        }
+        // turn the diff into a character before adding it to the answer string
+        answer += IntToChar(diff);
+      }
+      // get rid of any remaining zeroes at the end of the string,
+      // which would be leading zeroes since it's currently reversed
+      CleanUpString(answer);
+      // reverse it, orienting it correctly
+      Reverse(answer);
+      // create a BigInt instance to hold the answer string and return it
+      BigInt difference = new BigInt(answer);
+      return difference;
     }
     BigInt operator * (const BigInt& a, const BigInt& b)
     {
