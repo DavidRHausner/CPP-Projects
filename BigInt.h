@@ -1,7 +1,7 @@
 /*
   @file     BigInt.h
   @authors  David Hausner
-  @date     2016-12-25
+  @date     2016-12-22
   @version  1.0
   Prototypes of functions for BigInt class
 
@@ -73,10 +73,10 @@ class BigInt
       Reverse(bigintb);
       // ensure that both strings are the same length by
       // concatenating "leading" zeroes on the shorter one
-      while(biginta.length() > bigintb.length())
-        bigintb += "0";
-      while(biginta.length() < bigintb.length())
+      while(biginta.length() < size)
         biginta += "0";
+      while(bigintb.length() < size)
+        bigintb += "0";
       // initialize answer string
       string answer = "";
       // initialize temporary sum and carry ints to 0
@@ -107,7 +107,7 @@ class BigInt
       BigInt sum = new BigInt(answer);
       return sum;
     }
-        BigInt operator - (const BigInt& a, const BigInt& b)
+    BigInt operator - (const BigInt& a, const BigInt& b)
     {
       // get length of longest int for use in iterator
       size_t size = Size(Max(a,b));
@@ -182,23 +182,33 @@ class BigInt
     }
     BigInt& operator += (const BigInt& a, const BigInt& b)
     {
-
+      BigInt sum = new BigInt();
+      sum = a + b;
+      return *sum;
     }
     BigInt& operator -= (const BigInt& a, const BigInt& b)
     {
-
+      BigInt difference = new BigInt();
+      difference = a - b;
+      return *difference;
     }
     BigInt& operator *= (const BigInt& a, const BigInt& b)
     {
-
+      BigInt product = new BigInt();
+      product = a * b;
+      return *product;
     }
     BigInt& operator /= (const BigInt& a, const BigInt& b)
     {
-
+      BigInt quotient = new BigInt();
+      quotient = a / b;
+      return *quotient;
     }
     BigInt& operator %= (const BigInt& a, const BigInt& b)
     {
-
+      BigInt mod = new BigInt();
+      mod = a % b;
+      return *mod;
     }
     BigInt& operator ++ ()
     {
