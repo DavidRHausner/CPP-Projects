@@ -173,7 +173,12 @@ class BigInt
     }
     BigInt operator ^ (const BigInt& a, const BigInt& b)
     {
-
+      BigInt value = new BigInt("1");
+      for(size_t s = 0; s < b; s++)
+      {
+        value *= a;
+      }
+      return value;
     }
     BigInt& operator += (const BigInt& a, const BigInt& b)
     {
