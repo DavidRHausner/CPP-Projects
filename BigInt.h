@@ -1,9 +1,11 @@
 /*
   @file     BigInt.h
   @authors  David Hausner
-  @date     2016-12-22
+  @date     2016-12-25
   @version  1.0
   Prototypes of functions for BigInt class
+  
+  UNTESTED
 
   Copyright 2016, D. R. Hausner
 */
