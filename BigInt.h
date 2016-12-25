@@ -161,15 +161,62 @@ class BigInt
     }
     BigInt operator * (const BigInt& a, const BigInt& b)
     {
-
+      BigInt product = new BigInt("0");
+      BigInt layer = new BigInt();
+      size_t size_a = Size(a);
+      size_t size_b = Size(b);
+      size_t offset = 0;
+      int carry = 0;
+      // reverse strings to put "ones place" in position 0
+      Reverse(biginta);
+      Reverse(bigintb);
+      // for each digit i of a, multiply all digits of b by i
+      for(size_t size = 0; size < size_a; size++)
+      {
+        // clear layer
+        layer.Clear();
+        // initialize layer
+        for(size_t s = 0; s < offset; s++)
+          layer.Offset();
+        // multiply b by a[i]
+        for(size_t s = 0; s < size_b; s++)
+        {
+          // each individual multiplication
+          carry = a.At(size) * b.At(s) + carry;
+          // add "one's place" to layer
+          layer.AddDigit(IntToChar(carry % 10));
+          // move "ten's place" of carry to "one's place"
+          carry = carry / 10;
+        }
+        // add each place's product to BigInt product
+        product += layer;
+        // increase offset by one (annex a zero)
+        offset++;
+      }
+      return product;
     }
     BigInt operator / (const BigInt& a, const BigInt& b)
     {
-
+      string q;
+        BigInt quotient = new BigInt("0");
+      if(a < b)
+      { /* do nothing, just return "0" */ }
+      else
+      {
+        while(a > (b * quotient))
+        {
+          quotient++;
+        }
+        // while loop always goes one too far
+        quotient--;
+      }
+      return quotient;
     }
     BigInt operator % (const BigInt& a, const BigInt& b)
     {
-
+      BigInt mod = new BigInt();
+      mod = a - ((a / b) * b);
+      return mod;
     }
     BigInt operator ^ (const BigInt& a, const BigInt& b)
     {
@@ -298,6 +345,18 @@ class BigInt
     {
       if(s < Size())
         return atoi(bint.at(s));
+    }
+    void Offset()
+    {
+      bint = "0" + bint;
+    }
+    void Clear()
+    {
+      bint = "";
+    }
+    void AddDigit(char c)
+    {
+      bint += c;
     }
 }
 
