@@ -306,8 +306,8 @@ class BigInt
       {
         if(At(i) > a.At(i))
           return true;
-        else return false;
       }
+      return false;
     }
     bool operator <= (const BigInt& a)
     {
