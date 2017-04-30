@@ -3,6 +3,11 @@
 
 #include <cmath> // for sqrt function
 
+/*
+  @author: David Hausner
+  @date: 4/29/17
+*/
+
 class PhysVector
 {
   public:
